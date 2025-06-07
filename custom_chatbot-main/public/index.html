@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="carouselResponse.js"></script> 
+  <title>IBM Watson Assistant with App ID and File Upload</title>
+  <style>
+    /* Custom styles can be added here */
+    /* Adjust as needed */
+    body {
+      padding-top: 56px;
+      /* Height of the fixed navbar */
+    }
+
+    html {
+    font-family: sans-serif;
+  }
+  
+  #WACContainer.WACContainer .table {
+    border-collapse: collapse;
+    border: 2px solid rgb(200,200,200);
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+    width: 100%
+  }
+  
+  #WACContainer.WACContainer .td, .th {
+    border: 1px solid rgb(190,190,190);
+    padding: 10px 20px;
+  }
+  
+  #WACContainer.WACContainer .th {
+    background-color: rgb(235,235,235);
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  #WACContainer.WACContainer .td {
+    text-align: center;
+  }
+
+  #WACContainer.WACContainer .td-bold {
+    text-align: left;
+    font-weight: bold;
+    border: 1px solid rgb(190,190,190);
+    padding: 10px 20px;
+  }
+  
+
+    .mt-3 {
+      margin-top: 1rem !important;
+    }
+
+    .centered {
+      text-align: center;
+    }
+
+    .navbar-title {
+      text-align: center;
+      width: 100%;
+    }
+
+    #WACContainer.WACContainer .HideWebChat {
+      display: none;
+    }
+
+    #WebChatContainer {
+      height: 70vh;
+    }
+
+    #WACContainer.WACContainer .CurrencyCard {
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 8px;
+    }
+
+    #WACContainer.WACContainer .CurrencyCard p {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    #WACContainer.WACContainer .CurrencyCard__ResultOutput {
+      font-size: 30px;
+      line-height: 42px;
+    }
+
+    .content {
+      display: flex;
+      margin-top: 100px;
+    }
+
+    @media screen and (max-width: 992px) {
+      .content {
+        display: block;
+        margin-top: 100px;
+      }
+
+      .col-6 {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Bootstrap Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+
+    <!-- Centered Title -->
+    <div class="navbar-title">
+      <h3>Invoice AI Assistent</h3>
+      <h4><i>Ställ frågor om fakturor</i></h4>
+    </div>
+  </nav>
+
+  <div class="content container">
+    <!-- Your page content goes here -->
+    <div class="col-12 text-center justify-content-md-center">
+      <!-- Username above the file input -->
+      <h4 id="userGreeting" class="mt-1 left"></h4>
+    </div>
+  </div>
+
+  <div id="WebChatContainer" class="col-lg-15 mt-3" style="padding-left:10"></div>
+
+  <!-- Your page content goes here -->
+
+  <!-- Bootstrap JS and jQuery (required for Bootstrap) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+  <script>
+    function viewChangeHandler(event, instance) {
+      if (event.newViewState.mainWindow) {
+        instance.elements.getMainWindow().removeClassName('HideWebChat');
+      } else {
+        instance.elements.getMainWindow().addClassName('HideWebChat');
+      }
+    }
+
+    function customResponseHandler(event, instance) {
+  if (event.data.message.user_defined && event.data.message.user_defined.user_defined_type === 'test') {
+    dynamicTableHandler(event, instance);
+  } else if (event.data.message.user_defined && event.data.message.user_defined.user_defined_type === 'test2') {
+    dynamicTableHandler(event, instance);
+  }
+}
+
+  function dynamicTableHandler(event, instance) {
+    const { element, message } = event.data;
+
+    const data = message.user_defined.carousel_data;
+    console.log(data);
+
+    let table = '<table class ="table"><tr>';  
+
+    //Iterate through column names
+    const col_items = Object.keys(data[0]);
+
+     col_items.forEach(col_item => {
+      table += `<th class="th">${col_item}</th>`;
+    }) 
+    table += '</tr>';
+   
+    //Iterate through rows
+     data.forEach((item) => {
+      let vals = Object.values(item);
+      table += '<tr>';
+      vals.forEach((elem) => {
+        table += `<td>${elem}</td>`;
+      })
+      table += '</tr>';
+    })
+
+    table += '</table>';  
+    element.innerHTML = table; 
+
+  }
+
+    $().ready(() => {
+        const customElement = document.querySelector('#WebChatContainer');
+
+        window.watsonAssistantChatOptions = {
+          integrationID: 'f40cbfd4-cb7d-41ca-9d73-7d14c3445247', // App ID integration ID.
+          region: 'eu-de', // The region your integration is hosted in.
+          serviceInstanceID: '17cca0a2-269f-498e-9bbd-a4f8da435173', // App ID service instance ID.
+          element: customElement,
+          openChatByDefault: true,
+          showRestartButton: true,
+          clientVersion: '7',
+
+          onLoad: async (instance) => {
+            g_wa_instance = instance;
+            instance.on({ type: 'customResponse', handler: customResponseHandler });
+            instance.on({ type: 'view:change', handler: viewChangeHandler });
+
+            instance.updateLanguagePack(customLanguagePack);
+            instance.updateHomeScreenConfig({is_on: true,greeting: 'Hej ! Hur kan jag hjälpa dig idag?'});
+            
+            await instance.render();
+          },
+        };
+        setTimeout(function () {
+          const t = document.createElement('script');
+          t.src =
+            'https://web-chat.global.assistant.watson.appdomain.cloud/versions/' +
+            (window.watsonAssistantChatOptions.clientVersion || 'latest') +
+            '/WatsonAssistantChatEntry.js';
+          document.head.appendChild(t);
+        });
+      });
+    // });
+
+    //Update english placeholders with Swedish
+    const customLanguagePack = {
+      input_placeholder: 'Skriv någonting...'
+    };
+  </script>
+  <script>
+    var g_wa_instance;
+
+    async function messageChatbot(txt) {
+      var send_obj = { input: { message_type: 'text', text: txt } };
+      try {
+        var response = await g_wa_instance.send(send_obj, {});
+      } catch (error) {
+        console.error('Sending message to chatbot failed');
+      }
+    }
+
+    async function restartWA() {
+      await g_wa_instance.restartConversation();
+    }
+
+    // Update the label of the file input
+    $('#logout').click(function () {
+      g_wa_instance.destroySession();
+      restartWA();
+    });
+  </script>
+</body>
+
+</html>
