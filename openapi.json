@@ -1,0 +1,85 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Asset",
+        "description": " Answers the question by calling vector DB with  watsonx.AI to search  Invoice information",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://invoice-analyser.1hadxz5vutbe.us-south.codeengine.appdomain.cloud"
+        }
+    ],
+    "paths": {
+        "/process/": {
+            "post": {
+                "description": "Ask a Invoice question",
+                "operationId": "process",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "query": {
+                                        "$ref": "#/components/schemas/query"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": false
+                },
+                "responses": {
+                    "200": {
+                        "description": "The operation was successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/error"
+                                        },
+                                        "message": {
+                                            "$ref": "#/components/schemas/message"
+                                        },
+                                        "table": {
+                                          "$ref": "#/components/schemas/table"
+                                        },
+                                        "sql": {
+                                            "$ref": "#/components/schemas/sql"
+                                          }
+                                        }
+                                      }
+                                 }
+                             }
+                          }
+                   },
+                     "x-codegen-request-body-name": "body"
+                  }
+        }
+    },
+    "components": {
+        "schemas": {
+            "query": {
+                "type": "string"
+            },
+            "model_name": {
+              "type": "string"
+          },
+            "error": {
+                "type": "boolean"
+            },
+            "message": {
+                "type": "string"
+            },
+            "table": {
+                "type" : "string"
+            },
+            "sql": {
+                "type" : "string"
+            }
+        }
+    }
+  }
