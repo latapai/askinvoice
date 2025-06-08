@@ -7,7 +7,7 @@
     },
     "servers": [
         {
-            "url": "https://invoice-analyser.1hadxz5vutbe.us-south.codeengine.appdomain.cloud"
+            "url": "https://askinvoicedb.1wczmsfl5rg6.us-south.codeengine.appdomain.cloud"
         }
     ],
     "paths": {
